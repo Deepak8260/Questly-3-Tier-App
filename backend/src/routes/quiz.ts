@@ -26,13 +26,13 @@ router.post("/save-attempt", async (req: Request, res: Response) => {
     const body = req.body;
     const supabase = createClient(
       process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
     // Auto-upsert profile
     // Note: In a real app, we'd use proper auth here, but let's approximate
-    const { data: authData, error: authError } = await supabase.auth.getUser(req.headers.authorization?.replace("Bearer ", ""));
-    const userId = authData.user?.id || "anonymous";
+    const { data: authData } = await supabase.auth.getUser(req.headers.authorization?.replace("Bearer ", ""));
+    const userId = authData.user?.id || null;
 
     const fullName =
       (authData.user?.user_metadata?.full_name as string) ||
@@ -40,11 +40,13 @@ router.post("/save-attempt", async (req: Request, res: Response) => {
       authData.user?.email?.split("@")[0] ||
       "Unknown";
 
-    await supabase.from("profiles").upsert({
-      id: userId,
-      full_name: fullName,
-      email: authData.user?.email || ""
-    });
+    if (userId) {
+      await supabase.from("profiles").upsert({
+        id: userId,
+        full_name: fullName,
+        email: authData.user?.email || ""
+      });
+    }
 
     // Insert quiz attempt
     const { data, error } = await supabase
@@ -75,7 +77,7 @@ router.post("/save-attempt", async (req: Request, res: Response) => {
     }
 
     console.log("[save-attempt] ✅ Saved:", data.id);
-    res.json({ success: true, id: data.id });
+    res.json({ success: true, data });
   } catch (err) {
     console.error("[save-attempt] Unexpected:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -87,7 +89,7 @@ router.post("/init-db", async (req: Request, res: Response) => {
   try {
     const supabase = createClient(
       process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
     const migrations = [

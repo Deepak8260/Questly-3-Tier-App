@@ -38,7 +38,7 @@ export async function generateQuiz({
   const prompt = "You are a professional quiz generator. Generate exactly " + numQuestions + " quiz questions about: \"" + topic + "\".\n\nDifficulty: " + difficulty + " (" + difficultyGuide + ")\n" + typeInstruction + "\nAI Mode: " + aiMode + "\n\nCRITICAL: Respond ONLY with a valid JSON object. No markdown, no explanation.\n\nJSON format:\n{\n  \"questions\": [\n    {\n      \"question\": \"Clear, specific question text\",\n      \"code\": \"optional_code_snippet_here_or_empty_string\",\n      \"options\": [\"Option A\", \"Option B\", \"Option C\", \"Option D\"],\n      \"correctIndex\": 0,\n      \"explanation\": \"Brief explanation\"\n    }\n  ]\n}\n\nRules:\n- correctIndex is 0-based (0=first option, 1=second, etc.)\n- Each question must be unique\n- Explanations must be concise\n- Do NOT include the correct answer text in the question itself\n- Generate exactly " + numQuestions + " questions\n" + (isCodeTopic ? "- For programming/code questions: put the code snippet in the \"code\" field, leave empty string if no code needed\n- Write question text naturally referring to \"the code above\" or \"the following code\"" : '- Set "code" to empty string for all questions');
 
   // Try models in priority order
-  const MODELS = ["gemini-2.5-flash"];
+    const MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let geminiData: any = null;

@@ -376,6 +376,9 @@ export default function QuizTake({ quiz, onRetry }: { quiz: GeneratedQuiz; onRet
     setSaving(true);
     setSaveError(null);
     try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      
       const correctCount = finalAnswers.filter((a, i) => a === quiz.questions[i].correctIndex).length;
       const total = quiz.questions.length;
       const score = Math.round((correctCount / total) * 100);
@@ -383,7 +386,10 @@ export default function QuizTake({ quiz, onRetry }: { quiz: GeneratedQuiz; onRet
 
       const res = await fetch(`${API_BASE_URL}/api/quiz/save-attempt`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
+        },
         body: JSON.stringify({
           topic: quiz.topic,
           difficulty: quiz.difficulty,
@@ -414,7 +420,7 @@ export default function QuizTake({ quiz, onRetry }: { quiz: GeneratedQuiz; onRet
         console.error("Quiz save failed:", result);
         setSaveError(`Save failed: ${msg}${hint}`);
       } else {
-        console.log("Quiz saved:", result.data);
+        console.log("Quiz saved:", result);
       }
     } catch (err) {
       console.error("saveAttempt fetch error:", err);
