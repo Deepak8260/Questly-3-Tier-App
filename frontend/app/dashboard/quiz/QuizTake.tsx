@@ -5,8 +5,9 @@ import {
   CheckCircle, XCircle, ChevronRight, ChevronLeft,
   Trophy, RotateCcw, Brain, Clock, Zap, Download, Award, BookOpen
 } from "lucide-react";
-import type { GeneratedQuiz, QuizQuestion } from "@/app/api/quiz/generate/route";
+import type { GeneratedQuiz, QuizQuestion } from "@/lib/quiz";
 import { createClient } from "@/lib/supabase";
+import { API_BASE_URL } from "@/lib/api";
 
 // ── Helpers ──────────────────────────────────────────────────────
 function CodeBlock({ code }: { code: string }) {
@@ -380,7 +381,7 @@ export default function QuizTake({ quiz, onRetry }: { quiz: GeneratedQuiz; onRet
       const score = Math.round((correctCount / total) * 100);
       const passed = score >= 70;
 
-      const res = await fetch("/api/quiz/save-attempt", {
+      const res = await fetch(`${API_BASE_URL}/api/quiz/save-attempt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

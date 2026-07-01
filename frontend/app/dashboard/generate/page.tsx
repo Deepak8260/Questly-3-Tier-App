@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { Zap, ChevronRight, Loader2, Brain, AlertCircle } from "lucide-react";
-import type { GeneratedQuiz } from "@/app/api/quiz/generate/route";
+import type { GeneratedQuiz } from "@/lib/quiz";
 import QuizTake from "@/app/dashboard/quiz/QuizTake";
+import { API_BASE_URL } from "@/lib/api";
 
 const MODES = [
   { id: "standard", label: "Standard", desc: "Classic quiz format", icon: "📝" },
@@ -39,7 +40,7 @@ export default function GenerateQuizPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/quiz/generate", {
+      const res = await fetch(`${API_BASE_URL}/api/quiz/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
