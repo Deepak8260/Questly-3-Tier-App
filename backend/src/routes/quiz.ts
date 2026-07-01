@@ -55,14 +55,14 @@ router.post("/save-attempt", async (req: Request, res: Response) => {
         user_id: userId,
         topic: body.topic || "Unknown",
         difficulty: body.difficulty || "medium",
-        question_type: body.questionType || "mcq",
-        total_questions: body.totalQuestions || 0,
-        correct_answers: body.correctAnswers || 0,
-        score_pct: body.scorePct || 0,
-        time_taken_secs: body.timeTakenSecs || 0,
+        question_type: body.question_type || body.questionType || "mcq",
+        total_questions: body.total_questions || body.totalQuestions || 0,
+        correct_answers: body.correct_answers || body.correctAnswers || 0,
+        score_pct: body.score_pct || body.scorePct || 0,
+        time_taken_secs: body.time_taken_secs || body.timeTakenSecs || 0,
         passed: body.passed || false,
-        certificate_earned: body.certificateEarned || false,
-        questions_data: body.questionsData || null
+        certificate_earned: body.certificate_earned || body.certificateEarned || false,
+        questions_data: body.questions_data || body.questionsData || null
       })
       .select()
       .single();
